@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
-import 'package:flutter_application_1/bg_image.dart';
+
 import 'package:flutter_application_1/drawer.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,9 +12,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController _nameContoller = TextEditingController();
   var myText = 'Change me';
+
+  var data;
+
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  getData() async {
+    var res = await http
+        .get(Uri.parse('https://jsonplaceholder.typicode.com/photos'));
+
+    data = jsonDecode(res.body);
+    setState(() {});
   }
 
   @override
@@ -24,35 +38,23 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Card(
-            child: Column(
-              children: <Widget>[
-                BgImage(),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  myText,
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextField(
-                    controller: _nameContoller,
-                    decoration: InputDecoration(
-                        hintText: "Enter Your name",
-                        labelText: "Name",
-                        border: OutlineInputBorder()),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
+        child: data != null
+            ? ListView.builder(
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      title: Text(data[index]["title"]),
+                      subtitle: Text("ID:${data[index]["id"]}"),
+                      leading: Image.network(data[index]["url"]),
+                    ),
+                  );
+                },
+                itemCount: data.length,
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
       ),
       drawer: MyDrawer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
