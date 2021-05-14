@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:flutter_application_1/bg_image.dart';
-import 'package:flutter_application_1/pages/home_page.dart';
+import 'package:flutter_application_1/pages/utils/constants.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -52,7 +52,9 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 20),
                         RaisedButton(
                             onPressed: () {
-                              Navigator.pushNamed((context), "/home");
+                              Constants.prefs.setBool("loggedIn", true);
+                              Navigator.pushReplacementNamed(
+                                  (context), "/home");
                               // Navigator.push(
                               //     context,
                               //     MaterialPageRoute(
